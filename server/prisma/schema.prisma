@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Board {
+  id          String   @id @default(cuid())
+  title       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  stage       Stage    @default(IDEATION)
+  timerEnd    DateTime?
+  topics      Topic[]
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  boardId     String
+  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  title       String
+  votes       Int      @default(0)
+  discussed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum Stage {
+  IDEATION
+  VOTING
+  DISCUSSION
+  WRAP_UP
+}
